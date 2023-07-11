@@ -13,12 +13,14 @@ export interface FollowProp {
   }
   following: number[]
   own: number
+  refetch: () => void
 }
 
 export interface FollowListProp {
   following: number[]
   follower: FollowParent[]
   own: number | undefined
+  refetch: () => void
 }
 
 export interface FollowingParent {
