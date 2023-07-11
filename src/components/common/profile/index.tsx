@@ -1,8 +1,6 @@
-import React from 'react'
 import * as S from './style'
 
-function Profile({ img = '../../../public/assets/icons/profile.png' }) {
-  // console.log(img)
+function Profile({ img = 'assets/icons/profile.png' }) {
   return <S.ProfileImg src={img} />
 }
 
