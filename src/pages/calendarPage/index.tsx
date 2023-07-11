@@ -1,10 +1,11 @@
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import Calendars from '../../components/calendar'
 import { TopbarWrapper } from '../../styles/common'
 import { MdClose } from 'react-icons/md'
 import * as S from './style'
+import React, { memo } from 'react'
 
-function calendarPage() {
+const CalendarPage = memo(() => {
   const params = useParams()
 
   return (
@@ -20,6 +21,6 @@ function calendarPage() {
       <Calendars />
     </>
   )
-}
+})
 
-export default calendarPage
+export default CalendarPage

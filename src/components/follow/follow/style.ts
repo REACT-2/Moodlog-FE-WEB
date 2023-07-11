@@ -47,7 +47,7 @@ export const FollowUserIdLink = styled(Link)`
   }
 `
 
-export const FollowBtn = styled.button<{ following: boolean }>`
+export const FollowBtn = styled.button<{ following: boolean; isTransitioning: boolean }>`
   width: 100px;
   height: 32px;
   color: ${({ following, theme }) => (following ? theme.background : theme.textColor)};

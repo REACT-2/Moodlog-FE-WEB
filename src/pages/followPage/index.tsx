@@ -1,12 +1,11 @@
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { TopbarWrapper } from '../../styles/common'
 import * as S from './style'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
+import { useQuery, useQueryClient } from 'react-query'
 import { useEffect, useState } from 'react'
 import { getUser } from '../../apis/auth'
 import useUserData from '../../hooks/useUserData'
-import { following as postFollow } from '../../apis/diary'
-import { FollowParent, FollowingParent } from '../../types/follow'
+import { FollowParent } from '../../types/follow'
 import { NewUser } from '../../types/user'
 import Loading from '../../components/common/loading'
 import FollowList from '../../components/follow/follows'
@@ -15,11 +14,21 @@ import { MdClose } from 'react-icons/md'
 function FollowPage() {
   const params = useParams()
   const { data: own } = useUserData()
+  const quertClient = useQueryClient()
+
+  const handleRefetch = () => {
+    quertClient.invalidateQueries('user')
+  }
 
   const [following, setFollowing] = useState<number[]>([])
   const [follower, setFollower] = useState<FollowParent[]>([])
 
-  const { data, isLoading, error } = useQuery<NewUser>(['user', { page: params.id }], () =>
+  const {
+    data: FollowingData,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery<NewUser>(['user', { page: params.id }], () =>
     getUser(Number(params.id)).then((a) => {
       return a
     }),
@@ -27,8 +36,8 @@ function FollowPage() {
 
   useEffect(() => {
     // 내가 방문한 페이지의 유저를 팔로잉한 사람들의 데이터
-    if (typeof data !== 'undefined') {
-      setFollower((follower) => data.follower)
+    if (typeof FollowingData !== 'undefined') {
+      setFollower((follower) => FollowingData.follower)
     }
     //
     if (typeof own !== 'undefined') {
@@ -37,9 +46,9 @@ function FollowPage() {
         setFollowing((following) => [...following, followingData.follower.id])
       }
     }
-  }, [data])
+  }, [FollowingData, own])
 
-  if (!data || !own) return <></>
+  if (!FollowingData || !own) return <></>
 
   return (
     <>
@@ -51,7 +60,7 @@ function FollowPage() {
           <S.TopTitle>팔로워 목록</S.TopTitle>
         </S.TopBar>
       </TopbarWrapper>
-      <FollowList following={following} follower={follower} own={own.id} />
+      <FollowList following={following} follower={follower} own={own.id} refetch={handleRefetch} />
     </>
   )
 }
