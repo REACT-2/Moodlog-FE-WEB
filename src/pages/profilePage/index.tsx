@@ -31,10 +31,17 @@ function UserDetails({ name, number, link }: UserStyle) {
 function ProfilePage() {
   const params = useParams()
   const { data: own, refetch } = useUserData()
-  const [post, setPost] = useState<NewPost[]>([])
-  const [like, setLike] = useState<number>(0)
-  const [follower, setFollower] = useState<FollowParent[]>([])
-  const { data, isLoading, error } = useQuery<NewUser>(
+  const [profileData, setProfileData] = useState<{ post: NewPost[]; likes: number; follower: FollowParent[] }>({
+    post: [],
+    likes: 0,
+    follower: [],
+  })
+
+  const {
+    data: profile,
+    isLoading,
+    error,
+  } = useQuery<NewUser>(
     ['user', 'profile', params.id],
     () =>
       getUser(Number(params.id)).then((a) => {
@@ -44,17 +51,20 @@ function ProfilePage() {
   )
 
   useEffect(() => {
-    if (typeof data === 'object') {
-      setPost((post) => data.post)
-      setLike((like) => data.likes.length)
-      setFollower((follower) => data.follower)
+    if (typeof profile === 'object') {
+      setProfileData((profileData) => ({
+        ...profileData,
+        post: profile.post,
+        likes: profile.likes.length,
+        follower: profile.follower,
+      }))
     }
-  }, [data])
+  }, [profile])
 
   const filteredPosts = () => {
-    if (!post) return
+    if (!profileData.post) return
 
-    const sortedPosts = post.sort((a, b) => {
+    const sortedPosts = profileData.post.sort((a, b) => {
       if (a.id > b.id) {
         return -1
       } else {
@@ -64,13 +74,13 @@ function ProfilePage() {
     return sortedPosts
   }
 
-  if (!data) return <></>
+  if (!profile) return <></>
 
   return (
     <div>
       {/* 유저 프로필 */}
       <S.UserProfile>
-        {typeof own !== 'undefined' && Number(own.id) === Number(data.id) ? (
+        {typeof own !== 'undefined' && Number(own.id) === Number(profile.id) ? (
           <S.UserSettingLink to={'/setting'}>
             설정
             <MdSettings />
@@ -79,30 +89,30 @@ function ProfilePage() {
           <></>
         )}
         <S.UserImage>
-          <img src={isLoading ? '' : data.profile_image} />
+          <img src={isLoading ? '' : profile.profile_image} />
         </S.UserImage>
-        <S.UserName>{isLoading ? 'loading' : data.username}</S.UserName>
-        <S.UserIntro>{isLoading ? 'loading' : data?.profile_message}</S.UserIntro>
+        <S.UserName>{isLoading ? 'loading' : profile.username}</S.UserName>
+        <S.UserIntro>{isLoading ? 'loading' : profile?.profile_message}</S.UserIntro>
         {/* 유저 세부사항 */}
         <S.UserDetail>
           <UserDetails
             name="팔로워"
-            number={isLoading ? 0 : (follower?.length as number)}
+            number={isLoading ? 0 : (profileData.follower?.length as number)}
             link={`/follow/${params.id}`}
           />
           <S.UserDetailIine left="108px" />
-          <UserDetails name="좋아요" number={like} link="" />
+          <UserDetails name="좋아요" number={profileData.likes} link="" />
           <S.UserDetailIine left="230px" />
           <UserDetails
             name="일기 개수"
-            number={isLoading ? 0 : (post?.length as number)}
+            number={isLoading ? 0 : (profileData.post?.length as number)}
             link={`/calendar/${params.id}`}
           />
         </S.UserDetail>
       </S.UserProfile>
       {/* 유저 다이어리 */}
       <S.Postss>
-        <Posts posts={filteredPosts() || post} isShownUsername={false} />
+        <Posts posts={filteredPosts() || profileData.post} isShownUsername={false} />
       </S.Postss>
       <Nav />
     </div>
