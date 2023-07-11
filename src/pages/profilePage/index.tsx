@@ -8,16 +8,10 @@ import { useParams } from 'react-router-dom'
 import useUserData from '../../hooks/useUserData'
 import { NewUser } from '../../types/user'
 import { NewPost } from '../../types/diary'
-import { FollowParent } from '../../types/follow'
+import { FollowParent, UserStyle } from '../../types/follow'
 import Loading from '../../components/common/loading'
 import { MdSettings } from 'react-icons/md'
 import { MdClose } from 'react-icons/md'
-
-interface UserStyle {
-  name: string
-  number: number
-  link: string
-}
 
 function UserDetails({ name, number, link }: UserStyle) {
   return (
@@ -89,7 +83,7 @@ function ProfilePage() {
           <></>
         )}
         <S.UserImage>
-          <img src={isLoading ? '' : profile.profile_image} />
+          <img src={isLoading ? '' : profile.profile_image} alt="profile_image" />
         </S.UserImage>
         <S.UserName>{isLoading ? 'loading' : profile.username}</S.UserName>
         <S.UserIntro>{isLoading ? 'loading' : profile?.profile_message}</S.UserIntro>

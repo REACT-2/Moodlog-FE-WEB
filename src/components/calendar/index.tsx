@@ -32,7 +32,7 @@ function Calendars() {
     { staleTime: 10000, cacheTime: 1000 * 40 },
   )
   useEffect(() => {
-    if (typeof calendarsData === 'object' && typeof calendarsData.post === 'object') {
+    if (calendarsData && typeof calendarsData === 'object' && typeof calendarsData.post === 'object') {
       for (const item of calendarsData.post) {
         let date = item.createdAt.split('T')
         setCalendarState((calendarState) => ({
@@ -45,8 +45,9 @@ function Calendars() {
     }
   }, [calendarsData])
 
-  if (!calendarsData) return <></>
-
+  if (isLoading || !calendarsData) {
+    return <Loading />
+  }
   return (
     <div>
       <Calendar

@@ -1,12 +1,11 @@
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { TopbarWrapper } from '../../styles/common'
 import * as S from './style'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
+import { useQuery, useQueryClient } from 'react-query'
 import { useEffect, useState } from 'react'
 import { getUser } from '../../apis/auth'
 import useUserData from '../../hooks/useUserData'
-import { following as postFollow } from '../../apis/diary'
-import { FollowParent, FollowingParent } from '../../types/follow'
+import { FollowParent } from '../../types/follow'
 import { NewUser } from '../../types/user'
 import Loading from '../../components/common/loading'
 import FollowList from '../../components/follow/follows'
@@ -15,6 +14,11 @@ import { MdClose } from 'react-icons/md'
 function FollowPage() {
   const params = useParams()
   const { data: own } = useUserData()
+  const quertClient = useQueryClient()
+
+  const handleRefetch = () => {
+    quertClient.invalidateQueries('user')
+  }
 
   const [following, setFollowing] = useState<number[]>([])
   const [follower, setFollower] = useState<FollowParent[]>([])
@@ -42,7 +46,7 @@ function FollowPage() {
         setFollowing((following) => [...following, followingData.follower.id])
       }
     }
-  }, [FollowingData])
+  }, [FollowingData, own])
 
   if (!FollowingData || !own) return <></>
 
@@ -56,7 +60,7 @@ function FollowPage() {
           <S.TopTitle>팔로워 목록</S.TopTitle>
         </S.TopBar>
       </TopbarWrapper>
-      <FollowList following={following} follower={follower} own={own.id} refetch={refetch} />
+      <FollowList following={following} follower={follower} own={own.id} refetch={handleRefetch} />
     </>
   )
 }

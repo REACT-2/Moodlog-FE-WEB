@@ -27,3 +27,9 @@ export interface FollowingParent {
   id: number
   follower: UserFollow
 }
+
+export interface UserStyle {
+  name: string
+  number: number
+  link: string
+}
